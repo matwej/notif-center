@@ -4,7 +4,7 @@ RSpec.describe NotificationsController, type: :controller do
   let!(:client) { create(:client) }
   let!(:admin) { create(:admin) }
   describe 'GET index' do
-    let!(:cnotification) { create(:notification, user: client, title: "users notif") }
+    let!(:cnotification) { create(:notification, user: client, title: "users notif", created_at: Date.new(2021,1,1)) }
     let!(:notifications) { create_list(:notification, 4) }
     it 'returns all notifications with seen indication' do
       allow_any_instance_of(NotificationsController).to receive(:current_user).and_return(admin);
@@ -12,7 +12,7 @@ RSpec.describe NotificationsController, type: :controller do
       response_body = JSON.parse(response.body)
       expect(response_body.size).to eq(5)
       expect(response_body.first["title"]).to eq("users notif")
-      expect(response_body.first["seen"]).to eq(false)
+      expect(response_body.first["seen"]).to eq(true)
     end
     it 'returns all clients notifications' do
       allow_any_instance_of(NotificationsController).to receive(:current_user).and_return(client);
@@ -20,6 +20,7 @@ RSpec.describe NotificationsController, type: :controller do
       response_body = JSON.parse(response.body)
       expect(response_body.size).to eq(1)
       expect(response_body.first["title"]).to eq(cnotification.title)
+      expect(response_body.first["created_at"]).to eq("01.01.2021")
     end
   end
   describe 'POST create' do
